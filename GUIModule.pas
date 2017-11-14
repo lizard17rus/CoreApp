@@ -18,7 +18,6 @@ type
     procedure _ShowActiveSide(Side: TPanel);
     procedure _CreateControls(Controls: TPanel; SideParam: IGUISideParam);
     procedure _AlignControls(Controls: TPanel);
-    procedure _ComboBox_KeyPress(Sender: TObject; var Key: Char);
     procedure _ButtonedEdit_BrowseDir(Sender: TObject);
   end;
 
@@ -39,9 +38,9 @@ type
     function _GUIForm(Index: Integer=0; Name: string=''; New: Boolean=False): IGUIForm;
   end;
 
-procedure _SetGlobalColors(Color: string);
+procedure _SetGlobalColors(Color: TGUIColors);
 procedure _SetColors(Sender: TObject; Active: Boolean=False);
-function _CreateGUI(GUIParam: IGUIParam; Color: string): IGUI; stdcall;
+function _CreateGUI(GUIParam: IGUIParam): IGUI; stdcall;
 
 var
   MainColor: TColor;
@@ -77,7 +76,7 @@ begin
   for i := 0 to Controls.ComponentCount-1 do
   begin
     if (Controls.Components[i] is TComboBox) then
-      SideParam._ControlParam(0, (Controls.Components[i] as TWinControl).Name)._Value((Controls.Components[i] as TComboBox).Text, True);
+      SideParam._ControlParam(0, (Controls.Components[i] as TWinControl).Name)._Value((Controls.Components[i] as TComboBox).ItemIndex, True);
     if (Controls.Components[i] is TEdit) then
       SideParam._ControlParam(0, (Controls.Components[i] as TWinControl).Name)._Value((Controls.Components[i] as TEdit).Text, True);
     if (Controls.Components[i] is TButtonedEdit) then
@@ -133,11 +132,14 @@ begin
           begin
             CreateLabelTitle(lbl, Controls, _Caption);
             CreateComboBox(cmb, Controls, _Name, 250);
-            cmb.OnKeyPress := Event._ComboBox_KeyPress;
+            cmb.Style := csDropDownList;
             if _ActionParam <> nil then
               cmb.OnChange := _ActionParam.PNotifyEvent;
-            cmb.Items.AddStrings(_ComboParam._ComboList);
-            cmb.Text := _Value(Null);
+            if _ComboParam <> nil then
+              cmb.Items.AddStrings(_ComboParam._ListParam);
+            if _LookupParam <> nil then
+              cmb.Items.AddStrings(_LookupParam._ListParam);
+            cmb.ItemIndex := _Value(Null);
             cmb.PopupMenu := pop;
             cmb := nil;
             lbl := nil;
@@ -177,7 +179,7 @@ begin
         3:
           begin
             CreateLabelTitle(lbl, Controls, _Caption);
-            CreateImgUtils;
+            CreateLibMedia;
             CreateButtonedEdit(bedt, Controls, _Name, 250);
             bedt.Text := _Value(Null);
             case _TypeControl mod 10 of
@@ -236,11 +238,6 @@ begin
     end;
 end;
 
-procedure TEvent._ComboBox_KeyPress(Sender: TObject; var Key: Char);
-begin
-  Key := #0;
-end;
-
 procedure TEvent._ButtonedEdit_BrowseDir(Sender: TObject);
 var
   ChosenDirectory: string;
@@ -288,32 +285,28 @@ begin
 end;
 
 // процедуры управления глобальными переменными
-procedure _SetGlobalColors(Color: string);
+procedure _SetGlobalColors(Color: TGUIColors);
 begin
-  if Color = 'Green' then
-  begin
-    MainColor := clMoneyGreen;
-    ActivePanelColor := clLime;
-    ActivePanelFontColor := clWindowText;
+  case Color of
+    Green:
+      begin
+        MainColor := clMoneyGreen;
+        ActivePanelColor := clLime;
+        ActivePanelFontColor := clWindowText;
+      end;
+    Blue:
+      begin
+        MainColor := clSkyBlue;
+        ActivePanelColor := clAqua;
+        ActivePanelFontColor := clWindowText;
+      end;
+    Gray:
+      begin
+        MainColor := clSilver;
+        ActivePanelColor := clMedGray;
+        ActivePanelFontColor := clWindowText;
+      end;
   end;
-  if Color = 'Blue' then
-  begin
-    MainColor := clSkyBlue;
-    ActivePanelColor := clAqua;
-    ActivePanelFontColor := clWindowText;
-  end;
-  if Color = 'Gray' then
-  begin
-    MainColor := clSilver;
-    ActivePanelColor := clMedGray;
-    ActivePanelFontColor := clWindowText;
-  end;
-  if (Color <> 'Green') and (Color <> 'Blue') and (Color <> 'Gray') then
-    begin
-      MainColor := clBtnFace;
-      ActivePanelColor := clActiveBorder;
-      ActivePanelFontColor := clWindowText;
-    end;
 end;
 
 procedure _SetColors(Sender: TObject; Active: Boolean=False);
@@ -336,7 +329,7 @@ begin
 end;
 
 // экспортные функции создания объектов
-function _CreateGUI(GUIParam: IGUIParam; Color: string): IGUI; stdcall;
+function _CreateGUI(GUIParam: IGUIParam): IGUI; stdcall;
 var
   i, j: Integer;
   FormParam: IGUIFormParam;
@@ -353,7 +346,7 @@ begin
   else
     if GUIParam._GetHighFormsParam = -1 then
       Exit;
-  _SetGlobalColors(Color);
+  _SetGlobalColors(GUIParam._ColorScheme);
   Result := TGUI.Create; //создаем объект интерфейса
   //формы
   for i := 0 to GUIParam._GetHighFormsParam do

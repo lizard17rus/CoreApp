@@ -90,8 +90,8 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="ImgModule.pas">
-            <Form>ImgLib</Form>
+        <DCCReference Include="LibMediaModule.pas">
+            <Form>LibMedia</Form>
         </DCCReference>
         <DCCReference Include="Components.pas"/>
         <DCCReference Include="CoreAppIface.pas"/>

@@ -10,7 +10,7 @@ uses
   FireDAC.Comp.Client, FireDAC.Stan.Def, FireDAC.Phys.MySQL, FireDAC.DApt,
   FireDAC.Stan.Async, FireDAC.UI.Intf, FireDAC.VCLUI.Wait, FireDAC.Stan.Intf,
   FireDAC.Comp.UI,
-  ImgModule;
+  LibMediaModule;
 
 procedure CreateForm(var Component: TForm; Owner: TComponent);
 procedure CreateConnectionDB(var Component: TFDConnection; Owner: TWinControl; Params: TStream);
@@ -29,7 +29,7 @@ procedure CreateButton(var Component: TButton; Owner: TWinControl; Width: Intege
 procedure CreateComboBox(var Component: TComboBox; Owner: TWinControl; Name: string; Width: Integer);
 procedure CreateEdit(var Component: TEdit; Owner: TWinControl; Name: string; Width: Integer);
 procedure CreateMaskEdit(var Component: TMaskEdit; Owner: TWinControl; Name: string; Width: Integer);
-procedure CreateImgUtils;
+procedure CreateLibMedia;
 procedure CreateButtonedEdit(var Component: TButtonedEdit; Owner: TWinControl; Name: string; Width: Integer);
 procedure CreateOpenDialog (var Component: TOpenDialog; Owner: TWinControl; Filter: string);
 
@@ -220,10 +220,10 @@ begin
   Component.Parent := Owner;
 end;
 
-procedure CreateImgUtils;
+procedure CreateLibMedia;
 begin
   //----------------------------------------------------------------------------
-  ImgLib := TImgLib.Create(nil);
+  LibMedia := TLibMedia.Create(nil);
 end;
 
 procedure CreateButtonedEdit(var Component: TButtonedEdit; Owner: TWinControl; Name: string; Width: Integer);
@@ -233,7 +233,7 @@ begin
   Component.Name := Name;
   Component.Text := '';
   Component.Width := Width;
-  Component.Images := ImgLib.imgButtonedEdit;
+  Component.Images := LibMedia.imgButtonedEdit;
   Component.RightButton.ImageIndex := 0;
   Component.RightButton.HotImageIndex := 1;
   Component.RightButton.PressedImageIndex := 2;

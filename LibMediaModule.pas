@@ -1,4 +1,4 @@
-unit ImgModule;
+unit LibMediaModule;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ImgList;
 
 type
-  TImgLib = class(TForm)
+  TLibMedia = class(TForm)
     imgButtonedEdit: TImageList;
   private
     { Private declarations }
@@ -16,7 +16,7 @@ type
   end;
 
 var
-  ImgLib: TImgLib;
+  LibMedia: TLibMedia;
 
 implementation
 

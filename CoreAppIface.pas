@@ -7,7 +7,19 @@ interface
 //function _CreateGUIParam: IGUIParam; stdcall;
 //external 'CoreApp.dll' name '_CreateGUIParam';
 //
-//function _CreateGUI(GUIParam: IGUIParam; Color: string): IGUI; stdcall;
+//function _GUIColorScheme(const ColorScheme: string): TGUIColors; stdcall;
+//external 'CoreApp.dll' name '_GUIColorScheme';
+//
+//function _GUIColorSchemeIndex(const ColorScheme: string): Integer; stdcall;
+//external 'CoreApp.dll' name '_GUIColorSchemeIndex';
+//
+//function _GUITypeDBIndex(const TypeDB: string): Integer; stdcall;
+//external 'CoreApp.dll' name '_GUITypeDBIndex';
+//
+//function _GUICharsetDBIndex(const CharsetDB: string): Integer; stdcall;
+//external 'CoreApp.dll' name '_GUICharsetDBIndex';
+//
+//function _CreateGUI(GUIParam: IGUIParam; Color: TGUIColors): IGUI; stdcall;
 //external 'CoreApp.dll' name '_CreateGUI';
 
 {******************************************************************************}
@@ -15,7 +27,7 @@ interface
 {***** Сетка компонентов (TypeControl: Integer) *****}
 {  IParam._Form._Side._Control._TypeControl          }
 {                                                    }
-{  10 - ComboBox                                     }
+{  10 - ComboBox | LookupComboBox                    }
 {  20 - Edit                                         }
 {  21 - Edit ReadOnly                                }
 {  22 - Edit Disable                                 }
@@ -27,8 +39,28 @@ interface
 {                                                    }
 {****************************************************}
 
+//ПРИМЕЧАНИЕ: при заполнении списков комбобоксов
+//необходимо соблюдать порядок значений множественных типов.
+//Пример заполнения, используя TGUIColors:
+//
+//with _LookupParam(True) do
+//begin
+//  _AddItemLookup('Green', 'Зеленая');
+//  _AddItemLookup('Blue', 'Синяя');
+//  _AddItemLookup('Gray', 'Серая');
+//end;
+
 uses
   System.Classes, Vcl.Forms, Vcl.ExtCtrls;
+
+type
+  TGUIColors = (Green, Blue, Gray);
+
+type
+  TGUITypeDB = (MySQL);
+
+type
+  TGUICharsetDB = (utf8, cp1251, latin1, ascii, koi8r);
 
 type
   IGUIBasicParam = interface(IInterface)
@@ -38,7 +70,22 @@ type
 
 type
   IGUIComboParam = interface(IInterface)
-    function _ComboList(ComboList: TStrings=nil; Write: Boolean=False): TStrings;
+    function _AddItemCombo(const ListString: string): Integer;
+    procedure _DeleteItemCombo(ListIndex: Integer);
+    procedure _InsertItemCombo(ListIndex: Integer; const ListString: string);
+    function _ItemIndexOfString(const ListString: string): Integer;
+    function _ItemString(ListIndex: Integer): string;
+    function _ListParam: TStrings;
+  end;
+
+type
+  IGUILookupParam = interface(IGUIComboParam)
+    function _AddItemLookup(const KeyString, ListString: string): Integer;
+    procedure _DeleteItemLookup(KeyIndex: Integer);
+    procedure _InsertItemLookup(KeyIndex: Integer; const KeyString, ListString: string);
+    function _ItemIndexOfKey(const KeyString: string): Integer;
+    function _ItemKey(KeyIndex: Integer): string;
+    function _KeyParam: TStrings;
   end;
 
 type
@@ -65,6 +112,7 @@ type
     function _Value(Value: Variant; Write: Boolean=False): Variant;
     function _ActionParam(Name: string=''; Create: Boolean=False): IGUIActionParam;
     function _ComboParam(Create: Boolean=False): IGUIComboParam;
+    function _LookupParam(Create: Boolean=False): IGUILookupParam;
     function _GetHighPopupActionsParam: Integer;
     function _PopupActionParam(Index: Integer=0; Name: string=''; New: Boolean=False): IGUIActionButtonParam;
   end;
@@ -91,6 +139,7 @@ type
 
 type
   IGUIParam = interface(IInterface)
+    function _ColorScheme(ColorScheme: TGUIColors=Green; Write: Boolean = False): TGUIColors;
     function _GetHighFormsParam: Integer;
     function _FormParam(Index: Integer=0; Name: string=''; New: Boolean=False): IGUIFormParam;
   end;
