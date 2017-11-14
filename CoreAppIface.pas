@@ -19,7 +19,7 @@ interface
 //function _GUICharsetDBIndex(const CharsetDB: string): Integer; stdcall;
 //external 'CoreApp.dll' name '_GUICharsetDBIndex';
 //
-//function _CreateGUI(GUIParam: IGUIParam; Color: TGUIColors): IGUI; stdcall;
+//function _CreateGUI(GUIParam: IGUIParam): IGUI; stdcall;
 //external 'CoreApp.dll' name '_CreateGUI';
 
 {******************************************************************************}
